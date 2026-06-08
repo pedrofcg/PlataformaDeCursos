@@ -49,7 +49,19 @@ const api = {
     let result = [...collection];
     
     for (const key in params) {
-       result = result.filter((item: any) => String(item[key]) === String(params[key]));
+       if (!key.startsWith('_')) {
+         result = result.filter((item: any) => String(item[key]) === String(params[key]));
+       }
+    }
+
+    if (params['_sort']) {
+        const sortField = params['_sort'];
+        const order = params['_order'] === 'desc' ? -1 : 1;
+        result.sort((a, b) => {
+            if (a[sortField] < b[sortField]) return -1 * order;
+            if (a[sortField] > b[sortField]) return 1 * order;
+            return 0;
+        });
     }
     
     return { data: result };
